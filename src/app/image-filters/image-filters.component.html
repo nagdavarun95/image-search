@@ -1,0 +1,112 @@
+<div class="pt-5 px-4">
+  <div class="row">
+    <!-- search field and filter button -->
+    <div class="col-xl-10 col-lg-10 col-md-9 col-sm-9 col-8">
+      <div class="form-group has-search">
+        <span class="fa fa-search form-control-feedback"></span>
+        <input type="text" class="form-control rounded-pill" [(ngModel)]="searchText" (keyup)="searchFilter('text')"
+          id="searchText" placeholder="Search">
+      </div>
+    </div>
+    <div class="col-xl-2 col-lg-2 col-md-3 col-sm-3 col-4">
+      <div class="accordion">
+        <button class="btn btn-color text-white px-xl-5 px-lg-5 px-md-4 px-sm-0 btn-block px-0 rounded-pill"
+          type="button" data-toggle="collapse" data-target="#filterCollapse">Filters</button>
+      </div>
+    </div>
+  </div>
+  <!-- filter options -->
+  <div id="filterCollapse" class="collapse py-3 bg-filter">
+    <form [formGroup]="filterForm">
+      <div class="row px-3">
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
+          <div class="d-block">SORT BY</div>
+          <div class="custom-control custom-radio pb-2">
+            <input type="radio" id="sortBy1" formControlName="sortRadio" value="relevant"
+              (change)="searchFilter('sort')" class="custom-control-input">
+            <label class="custom-control-label" for="sortBy1">Relevant</label>
+          </div>
+          <div class="custom-control custom-radio pb-2">
+            <input type="radio" id="sortBy2" formControlName="sortRadio" value="latest" (change)="searchFilter('sort')"
+              class="custom-control-input">
+            <label class="custom-control-label" for="sortBy2">Newest</label>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
+          <div class="d-block">COLOR</div>
+          <div class="custom-control custom-radio pb-2">
+            <input type="radio" id="colorRadio1" formControlName="colorRadio" value="anyColor"
+              (change)="searchFilter('color')" class="custom-control-input">
+            <label class="custom-control-label" for="colorRadio1">Any Color</label>
+          </div>
+          <div class="custom-control custom-radio pb-2">
+            <input type="radio" id="colorRadio2" formControlName="colorRadio" (change)="searchFilter('color')"
+              value="black_and_white" class="custom-control-input">
+            <label class="custom-control-label" for="colorRadio2">Black and White</label>
+          </div>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+          <div class="d-block">ORIENTATION</div>
+          <div class="d-block">
+            <div class="custom-control custom-radio pb-2 custom-control-inline w-40">
+              <input type="radio" id="orientRadio1" formControlName="orientRadio" value="anyOrient"
+                (change)="searchFilter('orientation')" class="custom-control-input">
+              <label class="custom-control-label" for="orientRadio1">Any</label>
+            </div>
+            <div class="custom-control custom-radio pb-2 custom-control-inline">
+              <input type="radio" id="orientRadio2" formControlName="orientRadio" value="portrait"
+                (change)="searchFilter('orientation')" class="custom-control-input">
+              <label class="custom-control-label" for="orientRadio2">Portrait</label>
+            </div>
+          </div>
+          <div class="d-block">
+            <div class="d-flex">
+              <div class="custom-control custom-radio pb-2 custom-control-inline w-40">
+                <input type="radio" id="orientRadio3" formControlName="orientRadio" value="landscape"
+                  (change)="searchFilter('orientation')" class="custom-control-input">
+                <label class="custom-control-label" for="orientRadio3">Landscape</label>
+              </div>
+              <div class="custom-control custom-radio pb-2 custom-control-inline">
+                <input type="radio" id="orientRadio4" formControlName="orientRadio" value="squarish"
+                  (change)="searchFilter('orientation')" class="custom-control-input">
+                <label class="custom-control-label" for="orientRadio4">Square</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 col-12 mt-auto">
+          <div class="float-right ">
+            <button class="btn btn-color text-white rounded-pill" (click)="clearForm()">Clear Filters</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Main data -->
+  <!-- pt-xl-4 pt-lg-3 pt-md-2 pt-sm-2 pt-2 -->
+  <div class="">
+    <ng-container *ngIf="imageDatafromApi.length > 0">
+      <div class="row">
+        <div class="col-xl-2 col-lg-2 col-md-4 col-sm-4 col-6 pt-xl-4 pt-lg-4 pt-md-4 pt-sm-4 pt-4"
+          *ngFor="let item of imageDatafromApi; let i = index">
+          <a href="#img-id-{{i}}" (click)="openFullScreen()">
+            <img src="{{item.urls.small}}" class="img-fluid" alt="{{item.urls.alt_description}}">
+          </a>
+          <!-- full screen image, hidden by default  -->
+          <div *ngIf="fullImg">
+            <a href="#_" class="overlay" id="img-id-{{i}}">
+              <img src="{{item.urls.full}}" class="mx-auto" alt="{{item.urls.alt_description}}">
+              <div class="img_description">
+                {{item.description}}
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <div class="text-center pt-2" *ngIf="imageDatafromApi.length == 0">
+      No results found
+    </div>
+  </div>
+</div>
