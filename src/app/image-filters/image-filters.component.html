@@ -1,4 +1,4 @@
-<div class="pt-5 px-4">
+<div class="p-4">
   <div class="row">
     <!-- search field and filter button -->
     <div class="col-xl-10 col-lg-10 col-md-9 col-sm-9 col-8">
@@ -11,7 +11,12 @@
     <div class="col-xl-2 col-lg-2 col-md-3 col-sm-3 col-4">
       <div class="accordion">
         <button class="btn btn-color text-white px-xl-5 px-lg-5 px-md-4 px-sm-0 btn-block px-0 rounded-pill"
-          type="button" data-toggle="collapse" data-target="#filterCollapse">Filters</button>
+          type="button" data-toggle="collapse" data-target="#filterCollapse">
+          <span class="d-xl-block d-lg-block d-md-block d-sm-block d-none">Filters</span>
+          <span class="d-xl-none d-lg-none d-md-none d-sm-none d-block">
+            <i class="fa fa-filter" aria-hidden="true"></i>
+          </span>
+        </button>
       </div>
     </div>
   </div>
@@ -20,7 +25,7 @@
     <form [formGroup]="filterForm">
       <div class="row px-3">
         <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
-          <div class="d-block">SORT BY</div>
+          <div class="d-block font-weight-bold">SORT BY</div>
           <div class="custom-control custom-radio pb-2">
             <input type="radio" id="sortBy1" formControlName="sortRadio" value="relevant"
               (change)="searchFilter('sort')" class="custom-control-input">
@@ -33,7 +38,7 @@
           </div>
         </div>
         <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
-          <div class="d-block">COLOR</div>
+          <div class="d-block font-weight-bold">COLOR</div>
           <div class="custom-control custom-radio pb-2">
             <input type="radio" id="colorRadio1" formControlName="colorRadio" value="anyColor"
               (change)="searchFilter('color')" class="custom-control-input">
@@ -46,7 +51,7 @@
           </div>
         </div>
         <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
-          <div class="d-block">ORIENTATION</div>
+          <div class="d-block font-weight-bold">ORIENTATION</div>
           <div class="d-block">
             <div class="custom-control custom-radio pb-2 custom-control-inline w-40">
               <input type="radio" id="orientRadio1" formControlName="orientRadio" value="anyOrient"
@@ -84,29 +89,31 @@
   </div>
 
   <!-- Main data -->
-  <!-- pt-xl-4 pt-lg-3 pt-md-2 pt-sm-2 pt-2 -->
-  <div class="">
-    <ng-container *ngIf="imageDatafromApi.length > 0">
-      <div class="row">
-        <div class="col-xl-2 col-lg-2 col-md-4 col-sm-4 col-6 pt-xl-4 pt-lg-4 pt-md-4 pt-sm-4 pt-4"
-          *ngFor="let item of imageDatafromApi; let i = index">
-          <a href="#img-id-{{i}}" (click)="openFullScreen()">
-            <img src="{{item.urls.small}}" class="img-fluid" alt="{{item.urls.alt_description}}">
+  <div *ngIf="imageDatafromApi.length > 0">
+    <div class="row">
+      <div class="col-xl-2 col-lg-2 col-md-4 col-sm-4 col-6 pt-xl-4 pt-lg-4 pt-md-4 pt-sm-4 pt-4"
+        *ngFor="let item of imageDatafromApi; let i = index">
+        <a href="#img-id-{{i}}" (click)="openFullScreen(item)">
+          <img src="{{item.urls.small}}" class="img-fluid" alt="{{item.urls.alt_description}}">
+        </a>
+        <!-- full screen image, hidden by default  -->
+        <div *ngIf="fullImg">
+          <a href="#_" class="overlay" id="img-id-{{i}}">
+            <img src="{{fullscreenImg.urls.full}}" class="mx-auto" alt="{{fullscreenImg.urls.alt_description}}">
+            <div class="img_description">
+              {{fullscreenImg.description}}
+            </div>
           </a>
-          <!-- full screen image, hidden by default  -->
-          <div *ngIf="fullImg">
-            <a href="#_" class="overlay" id="img-id-{{i}}">
-              <img src="{{item.urls.full}}" class="mx-auto" alt="{{item.urls.alt_description}}">
-              <div class="img_description">
-                {{item.description}}
-              </div>
-            </a>
-          </div>
         </div>
       </div>
-    </ng-container>
-    <div class="text-center pt-2" *ngIf="imageDatafromApi.length == 0">
-      No results found
     </div>
+    <div class="text-center pt-3" *ngIf="noMoreData">
+      <h4>
+        <i>That's all for now! </i>
+      </h4>
+    </div>
+  </div>
+  <div class="text-center pt-2" *ngIf="imageDatafromApi.length == 0">
+    {{errMsg}}
   </div>
 </div>

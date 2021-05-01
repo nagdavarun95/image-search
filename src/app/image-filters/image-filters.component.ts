@@ -13,12 +13,15 @@ export class ImageFiltersComponent implements OnInit {
   pageNo = 1;
   perPage = 24;
   imageDatafromApi = [];
-  zoomImage;
   fullImg = false;
   searchText: string = null;
-  filterset = {};
   sendData = { client_id: this.client_id, page: this.pageNo, per_page: this.perPage };
   filterForm: any = FormGroup;
+  normalData: boolean;
+  filterData: boolean
+  noMoreData = false;
+  errMsg
+  fullscreenImg
   constructor(
     private imageFilterService: ImageFiltersService,
     private fb: FormBuilder,
@@ -27,8 +30,10 @@ export class ImageFiltersComponent implements OnInit {
   @HostListener("window:scroll", [])
   onScroll(): void {
     if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-      console.log("you're at the bottom of the page")
-      // this.showData()
+      if (this.normalData == true)
+        this.showData()
+      else
+        this.searchFilterApi()
     }
   }
 
@@ -38,6 +43,7 @@ export class ImageFiltersComponent implements OnInit {
       colorRadio: [''],
       orientRadio: [''],
     })
+
     this.showData()
   }
 
@@ -45,21 +51,25 @@ export class ImageFiltersComponent implements OnInit {
   showData() {
     this.imageFilterService.getImageData(this.sendData).subscribe(
       res => {
-        console.log("res", res)
-        this.imageDatafromApi = res
+        this.normalData = true;
+        this.filterData = false;
+        this.imageDatafromApi.push(...res);
+        this.pageNo++;
+        this.sendData["page"] = this.pageNo
       },
       err => {
         console.log("err", err)
+        this.errMsg = err.error.errors[0]
       }
     )
-    this.pageNo++
+
   }
 
   // search and filter function
   searchFilter(key) {
-    console.log("this.filterForm.value", this.filterForm.value)
+    this.pageNo = 1
+    this.sendData['page'] = 1
     var formData = this.filterForm.value;
-    console.log("formData", formData)
     if (key == 'text')
       this.sendData['query'] = this.searchText;
 
@@ -89,19 +99,37 @@ export class ImageFiltersComponent implements OnInit {
     else {
       delete this.sendData['orientation']
     }
+    this.searchFilterApi();
+  }
 
-    console.log("this.sendData", this.sendData)
+  // call search API
+  searchFilterApi() {
+    if (this.sendData['page'] == 1) {
+      this.imageDatafromApi = []
+    }
     this.imageFilterService.searchType(this.sendData).subscribe(
       res => {
-        console.log("res", res)
-        this.imageDatafromApi = res.results
+        this.normalData = false;
+        this.filterData = true;
+        this.imageDatafromApi.push(...res.results)
+        this.pageNo++;
+        this.sendData["page"] = this.pageNo
+        if (this.pageNo > 1 && res.results.length == 0) {
+          this.noMoreData = true;
+        }
+        else {
+          this.errMsg = "No data found"
+        }
       },
       err => {
         console.log("err", err)
+        this.errMsg = err.error.errors[0]
       }
     )
+
   }
 
+  // clear filters
   clearForm() {
     this.filterForm.reset();
     delete this.sendData['color'];
@@ -109,11 +137,15 @@ export class ImageFiltersComponent implements OnInit {
     delete this.sendData['order_by'];
     delete this.sendData['query'];
     this.searchText = "";
+    this.pageNo = 1
+    this.sendData['page'] = 1
+    this.imageDatafromApi = []
     this.showData();
   }
 
   // open fullscreen image.
-  openFullScreen() {
+  openFullScreen(imgData) {
     this.fullImg = true
+    this.fullscreenImg = imgData
   }
 }

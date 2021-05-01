@@ -29,6 +29,10 @@ img {
   background-color: #c4c4c4;
 }
 
+.btn-block+.btn-block {
+  margin-top: 0px;
+}
+
 .bg-filter {
   background-color: #e5e5e5;
   border-radius   : 1rem;
@@ -36,7 +40,6 @@ img {
 
 .w-40 {
   width: 40%;
-  ;
 }
 
 .overlay {
